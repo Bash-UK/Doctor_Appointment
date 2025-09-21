@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Book</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+<main>
+<h2>Book Appointment</h2>
+<form id="bookForm">
+  <label>Choose Doctor</label>
+  <select id="doctor"></select>
+  <label>Date</label><input type="date" id="date" required>
+  <label>Time</label><input type="time" id="time" required>
+  <button type="submit">Book</button>
+</form>
+<div id="msg"></div>
+<script>
+async function loadDoctors(){
+  // simple endpoint: list doctors via a small API (we'll fetch from /api/list_doctors.php)
+  const res = await fetch('/api/list_doctors.php');
+  const data = await res.json();
+  const sel = document.getElementById('doctor');
+  data.doctors.forEach(d=>{ const o=document.createElement('option'); o.value=d.id; o.innerText=d.name+' — '+d.specialty; sel.appendChild(o); });
+}
+document.getElementById('bookForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const res = await fetch('/api/appointments.php', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({doctor_id: document.getElementById('doctor').value, date: document.getElementById('date').value, time: document.getElementById('time').value})
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById('msg').innerText = 'Booked! ID: ' + data.id;
+  } else {
+    document.getElementById('msg').innerText = data.error || 'Booking failed';
+  }
+});
+loadDoctors();
+</script>
+</main></body></html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Dashboard</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+<main>
+<h2>Dashboard</h2>
+<div id="userArea"></div>
+<div id="appointments" class="appointments"></div>
+<script>
+async function fetchMe(){
+  const res = await fetch('/api/auth.php?action=me');
+  const data = await res.json();
+  const user = data.user;
+  if (!user) {
+    window.location.href = '/login.html';
+    return;
+  }
+  document.getElementById('userArea').innerHTML = '<p>Hi '+user.name+' ('+user.role+')</p><button id="logout">Logout</button>';
+  document.getElementById('logout').onclick = async ()=>{ await fetch('/api/auth.php?action=logout'); localStorage.removeItem('user'); window.location.href='/'; };
+  loadAppointments();
+}
+async function loadAppointments(){
+  const res = await fetch('/api/appointments.php');
+  const data = await res.json();
+  const appts = data.appointments || [];
+  const container = document.getElementById('appointments');
+  container.innerHTML = '';
+  if (appts.length===0) container.innerText = 'No appointments yet.';
+  appts.forEach(a=>{
+    const div = document.createElement('div'); div.className='card';
+    div.innerHTML = '<strong>'+ (a.appointment_date+' '+a.appointment_time) +'</strong><div>Doctor: '+(a.doctor_name||a.patient_name||'')+'</div><div>Status: '+a.status+'</div>';
+    if ((JSON.parse(localStorage.getItem('user')||'{}').role) === 'doctor') {
+      // doctor can confirm
+      const btn = document.createElement('button'); btn.innerText='Confirm'; btn.onclick = async ()=>{ await fetch('/api/appointments.php', {method:'PUT', body: 'id='+a.id+'&status=confirmed'}); loadAppointments(); };
+      div.appendChild(btn);
+    }
+    container.appendChild(div);
+  });
+}
+fetchMe();
+</script>
+</main></body></html>

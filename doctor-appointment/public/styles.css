@@ -1,0 +1,10 @@
+body{font-family: Arial, sans-serif; margin:0; padding:0; background:#f7f7f7;color:#222}
+header{background:#0b6; padding:16px;color:white}
+header h1{margin:0}
+main{padding:20px}
+form{max-width:480px;margin:12px 0;background:#fff;padding:16px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+label{display:block;margin:8px 0 4px}
+input,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:4px}
+button{padding:10px 14px;border:0;border-radius:6px;background:#0b6;color:white;cursor:pointer}
+.appointments{margin-top:12px}
+.card{background:white;padding:12px;border-radius:6px;margin-bottom:8px}
